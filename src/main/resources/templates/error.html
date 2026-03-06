@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Erreur – Quizzy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/main.css}">
+</head>
+<body class="page-wrapper">
+
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+<main class="main-content" style="display:flex;align-items:center;justify-content:center;flex:1">
+  <div style="text-align:center;max-width:480px">
+    <div style="font-size:5rem;margin-bottom:1.5rem"><span class="material-symbols-outlined">sentiment_dissatisfied</span></div>
+    <h1 style="font-size:var(--text-3xl);font-weight:800;margin-bottom:.75rem">
+      Une erreur est survenue
+    </h1>
+    <p style="color:var(--text-secondary);margin-bottom:2rem;line-height:1.7"
+       th:text="${error} ?: 'La page que vous cherchez est introuvable ou une erreur technique s\'est produite.'">
+      La page que vous cherchez est introuvable.
+    </p>
+    <div style="display:flex;gap:.75rem;justify-content:center">
+      <a th:href="@{/}" class="btn btn--primary"><span class="material-symbols-outlined">home</span> Retour à l'accueil</a>
+    </div>
+  </div>
+</main>
+
+</body>
+</html>

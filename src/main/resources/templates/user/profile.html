@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mon Profil – Quizzy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/main.css}">
+</head>
+<body class="page-wrapper">
+
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+<main class="main-content">
+
+  <!-- Alertes -->
+  <div th:if="${param.success}" class="alert alert--success" style="margin-bottom:1.5rem" data-auto-dismiss>
+    <span><span class="material-symbols-outlined">check_circle</span></span> <span th:text="${param.success[0]}">Mis à jour</span>
+  </div>
+  <div th:if="${error}" class="alert alert--danger" style="margin-bottom:1.5rem">
+    <span>⚠️</span> <span th:text="${error}"></span>
+  </div>
+
+  <div class="page-header">
+    <div class="page-header__text">
+      <h1>Mon Profil</h1>
+      <p>Gérez vos informations personnelles et consultez vos statistiques.</p>
+    </div>
+  </div>
+
+  <div class="grid-2" style="gap:2rem">
+
+    <!-- Colonne gauche : infos utilisateur -->
+    <div style="display:flex;flex-direction:column;gap:1.5rem">
+
+      <!-- Card avatar + infos -->
+      <div class="card">
+        <div class="card__body" style="text-align:center;padding:2rem">
+          <div style="width:80px;height:80px;border-radius:50%;background:var(--primary);
+                      color:#fff;display:flex;align-items:center;justify-content:center;
+                      font-size:2rem;font-weight:800;margin:0 auto 1rem;text-transform:uppercase"
+               th:text="${#strings.substring(profile.username, 0, 1)}">U</div>
+          <h2 style="font-size:var(--text-xl);font-weight:700" th:text="${profile.username}">Utilisateur</h2>
+          <p style="color:var(--text-muted);margin:.3rem 0" th:text="${profile.email}">email@ex.com</p>
+          <span th:if="${profile.role == 'ADMIN'}" class="badge badge--primary" style="margin-top:.5rem">
+            ⚡ Administrateur
+          </span>
+          <span th:unless="${profile.role == 'ADMIN'}" class="badge badge--gray" style="margin-top:.5rem">
+            <span class="material-symbols-outlined">person</span> Utilisateur
+          </span>
+        </div>
+      </div>
+
+      <!-- Stats card -->
+      <div th:if="${stats != null}" class="card">
+        <div class="card__header">
+          <span class="card__title"><span class="material-symbols-outlined">bar_chart</span> Mes statistiques</span>
+        </div>
+        <div class="card__body" style="padding:1.25rem">
+          <div class="profile-stats-grid">
+            <div class="stat-card">
+              <div class="stat-card__icon stat-card__icon--primary"><span class="material-symbols-outlined">sports_esports</span></div>
+              <div class="stat-card__info">
+                <div class="stat-card__value" th:text="${stats.totalAttempts}">0</div>
+                <div class="stat-card__label">Parties jouées</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-card__icon stat-card__icon--success">⭐</div>
+              <div class="stat-card__info">
+                <div class="stat-card__value"
+                     th:text="${#numbers.formatDecimal(stats.averageScore, 1, 1) + '%'}">0%</div>
+                <div class="stat-card__label">Score moyen</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-card__icon stat-card__icon--warning"><span class="material-symbols-outlined">emoji_events</span></div>
+              <div class="stat-card__info">
+                <div class="stat-card__value" th:text="${stats.bestScore + '%'}">0%</div>
+                <div class="stat-card__label">Meilleur score</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-card__icon stat-card__icon--accent">⏱</div>
+              <div class="stat-card__info">
+                <div class="stat-card__value"
+                     th:text="${#numbers.formatDecimal(stats.totalTimeSpent / 60.0, 1, 0) + 'min'}">0min</div>
+                <div class="stat-card__label">Temps total</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Colonne droite : formulaire d'édition -->
+    <div class="card">
+      <div class="card__header">
+        <span class="card__title"><span class="material-symbols-outlined">edit</span>️ Modifier mon profil</span>
+      </div>
+      <div class="card__body">
+        <form th:action="@{/user/profile/update}" method="post">
+
+          <div class="form-group">
+            <label class="form-label">Pseudo</label>
+            <input class="form-input" type="text" name="username"
+                   th:value="${profile.username}" placeholder="Nouveau pseudo">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input class="form-input" type="email" name="email"
+                   th:value="${profile.email}" placeholder="Nouvel email">
+          </div>
+
+          <hr class="divider">
+          <p style="font-size:var(--text-sm);color:var(--text-secondary);margin-bottom:1rem">
+            <span class="material-symbols-outlined">lock</span> Pour changer votre mot de passe, renseignez l'ancien et le nouveau ci-dessous.
+          </p>
+
+          <div class="form-group">
+            <label class="form-label">Mot de passe actuel</label>
+            <input class="form-input" type="password" name="oldPassword"
+                   placeholder="Mot de passe actuel">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Nouveau mot de passe</label>
+            <input class="form-input" type="password" name="newPassword"
+                   placeholder="Nouveau mot de passe">
+          </div>
+
+          <button type="submit" class="btn btn--primary" style="width:100%">
+<!--            💾 Enregistrer les modifications-->
+            <span class="material-symbols-outlined">save</span> Enregistrer les modifications
+          </button>
+
+        </form>
+      </div>
+    </div>
+
+  </div>
+
+</main>
+
+<script>
+  document.querySelectorAll('.alert[data-auto-dismiss]').forEach(a => {
+    setTimeout(() => { a.style.opacity='0'; a.style.transition='opacity .4s';
+      setTimeout(()=>a.remove(),400); }, 4000);
+  });
+</script>
+
+</body>
+</html>

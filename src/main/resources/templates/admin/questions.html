@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Questions – Admin Quizzy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/main.css}">
+  <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body class="page-wrapper page-wrapper--admin">
+
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+<div class="admin-layout">
+
+  <!-- Sidebar -->
+  <aside class="admin-sidebar">
+    <div class="admin-sidebar__header">
+      <div class="admin-sidebar__label">Administration</div>
+    </div>
+    <div class="admin-sidebar__section-title">Navigation</div>
+    <a th:href="@{/admin}" class="admin-nav-item">
+      <span class="admin-nav-item__icon"><span class="material-symbols-outlined">bar_chart</span></span> Dashboard
+    </a>
+    <a th:href="@{/admin/questions}" class="admin-nav-item active">
+      <span class="admin-nav-item__icon"><span class="material-symbols-outlined">help</span></span> Questions
+    </a>
+    <a th:href="@{/admin/categories}" class="admin-nav-item">
+      <span class="admin-nav-item__icon"><span class="material-symbols-outlined">menu_book</span></span> Catégories
+    </a>
+    <a th:href="@{/admin/users}" class="admin-nav-item">
+      <span class="admin-nav-item__icon"><span class="material-symbols-outlined">groups</span></span> Utilisateurs
+    </a>
+    <div class="admin-sidebar__section-title">Application</div>
+    <a th:href="@{/}" class="admin-nav-item">
+      <span class="admin-nav-item__icon"><span class="material-symbols-outlined">home</span></span> Site public
+    </a>
+    <a th:href="@{/auth/logout}" class="admin-nav-item">
+      <span class="admin-nav-item__icon"><span class="material-symbols-outlined">logout</span></span> Déconnexion
+    </a>
+  </aside>
+
+  <!-- Contenu -->
+  <div class="admin-content">
+
+    <!-- Alertes -->
+    <div th:if="${param.success}" class="alert alert--success" style="margin-bottom:1.5rem" data-auto-dismiss>
+      <span class="material-symbols-outlined">check_circle</span> <span th:text="${param.success[0]}">Succès</span>
+    </div>
+    <div th:if="${param.error}" class="alert alert--danger" style="margin-bottom:1.5rem" data-auto-dismiss>
+      ⚠️ Une erreur est survenue.
+    </div>
+
+    <div class="page-header">
+      <div class="page-header__text">
+        <h1>Gestion des Questions</h1>
+        <p>Créez et gérez les questions de quiz.</p>
+      </div>
+      <button class="btn btn--primary" data-modal-open="modal-create-question">
+        + Nouvelle question
+      </button>
+    </div>
+
+    <!-- Barre de recherche -->
+    <div class="admin-action-bar">
+      <div class="admin-search">
+        <span class="admin-search__icon"><span class="material-symbols-outlined">search</span></span>
+        <input type="text" id="table-search" placeholder="Rechercher une question...">
+      </div>
+    </div>
+
+    <!-- Tableau -->
+    <div class="card">
+      <div th:if="${questions != null and !questions.empty}" class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Question</th>
+              <th>Catégorie</th>
+              <th>Difficulté</th>
+              <th>Options</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:each="q : ${questions}">
+              <td style="max-width:320px">
+                <span th:text="${q.questionText}">Question...</span>
+              </td>
+              <td>
+                <span class="badge badge--primary"
+                      th:text="${q.category?.name} ?: 'N/A'">Catégorie</span>
+              </td>
+              <td>
+                <span class="badge"
+                      th:classappend="${q.difficulty == 'EASY'} ? 'badge--easy' : (${q.difficulty == 'MEDIUM'} ? 'badge--medium' : 'badge--hard')"
+                      th:text="${q.difficulty}">MEDIUM</span>
+              </td>
+              <td style="color:var(--text-muted)" th:text="${q.options?.size() ?: 0} + ' options'">4 options</td>
+              <!-- <td>
+                <form th:action="@{/admin/questions/delete/{id}(id=${q.id})}" method="post"
+                      style="display:inline">
+                  <button type="submit" class="btn btn--danger btn--sm"
+                          data-confirm="Confirmer la suppression de cette question ?">
+                    <span class="material-symbols-outlined">delete</span> Supprimer
+                  </button>
+                </form>
+              </td> -->
+
+            <td>
+                <button class="btn btn--secondary btn--sm"
+                        data-modal-open="modal-edit-question"
+                        th:data-id="${q.id}"
+                        th:data-text="${q.questionText}"
+                        th:data-difficulty="${q.difficulty}"
+                        th:data-category="${q.category?.id}"
+                        style="margin-right:.5rem">
+                  <span class="material-symbols-outlined">edit</span>️ Modifier
+                </button>
+                <form th:action="@{/admin/questions/delete/{id}(id=${q.id})}" method="post"
+                      style="display:inline">
+                  <button type="submit" class="btn btn--danger btn--sm"
+                          data-confirm="Confirmer la suppression de cette question ?">
+                    <span class="material-symbols-outlined">delete</span> Supprimer
+                  </button>
+                </form>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div th:if="${questions == null or questions.empty}" class="empty-state">
+        <div class="empty-state__icon"><span class="material-symbols-outlined">help</span></div>
+        <div class="empty-state__title">Aucune question</div>
+        <p>Cliquez sur « Nouvelle question » pour commencer.</p>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div th:if="${totalPages != null and totalPages > 1}" class="pagination">
+      <a th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+         th:href="@{/admin/questions(page=${i})}"
+         class="pagination__btn"
+         th:classappend="${i == currentPage} ? 'active' : ''"
+         th:text="${i + 1}">1</a>
+    </div>
+
+  </div>
+</div>
+
+<!-- Modal : Créer une question -->
+<div id="modal-create-question" class="modal-overlay">
+  <div class="modal">
+    <div class="modal__header">
+      <span class="modal__title"><span class="material-symbols-outlined">add</span> Nouvelle question</span>
+      <button class="modal__close" data-modal-close><span class="material-symbols-outlined">close</span></button>
+    </div>
+    <div class="modal__body">
+      <form th:action="@{/admin/questions/create}" method="post">
+
+        <div class="form-group">
+          <label class="form-label">Question *</label>
+          <textarea class="form-textarea" name="questionText" required
+                    placeholder="Saisissez votre question ici..."></textarea>
+        </div>
+
+        <div class="grid-2" style="gap:1rem">
+          <div class="form-group">
+            <label class="form-label">Catégorie *</label>
+            <select class="form-select" name="categoryId" required>
+              <option value="">Choisir une catégorie</option>
+              <option th:each="cat : ${categories}"
+                      th:value="${cat.id}"
+                      th:text="${cat.name}">Catégorie</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Difficulté *</label>
+            <select class="form-select" name="difficulty" required>
+              <option value="EASY"><span class="material-symbols-outlined">circle</span> Facile</option>
+              <option value="MEDIUM" selected><span class="material-symbols-outlined">circle</span> Moyen</option>
+              <option value="HARD"><span class="material-symbols-outlined">circle</span> Difficile</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Options (cochez la ou les bonnes réponses)</label>
+          <div id="options-container">
+            <div class="option-row">
+              <input type="text" class="form-input" name="optionTexts" placeholder="Option A" required>
+              <label class="option-row__correct">
+                <input type="checkbox" name="correctOptions" value="0">
+                <span class="material-symbols-outlined">check</span> Correcte
+              </label>
+            </div>
+            <div class="option-row">
+              <input type="text" class="form-input" name="optionTexts" placeholder="Option B" required>
+              <label class="option-row__correct">
+                <input type="checkbox" name="correctOptions" value="1">
+                <span class="material-symbols-outlined">check</span> Correcte
+              </label>
+            </div>
+            <div class="option-row">
+              <input type="text" class="form-input" name="optionTexts" placeholder="Option C">
+              <label class="option-row__correct">
+                <input type="checkbox" name="correctOptions" value="2">
+                <span class="material-symbols-outlined">check</span> Correcte
+              </label>
+            </div>
+            <div class="option-row">
+              <input type="text" class="form-input" name="optionTexts" placeholder="Option D">
+              <label class="option-row__correct">
+                <input type="checkbox" name="correctOptions" value="3">
+                <span class="material-symbols-outlined">check</span> Correcte
+              </label>
+            </div>
+          </div>
+          <button type="button" id="add-option" class="btn btn--ghost btn--sm" style="margin-top:.5rem">
+            + Ajouter une option
+          </button>
+        </div>
+
+        <div style="display:flex;gap:.75rem;justify-content:flex-end;margin-top:1.5rem">
+          <button type="button" class="btn btn--secondary" data-modal-close>Annuler</button>
+          <button type="submit" class="btn btn--primary">Créer la question</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal : Modifier une question -->
+<div id="modal-edit-question" class="modal-overlay">
+  <div class="modal">
+    <div class="modal__header">
+      <span class="modal__title"><span class="material-symbols-outlined">edit</span>️ Modifier la question</span>
+      <button class="modal__close" data-modal-close><span class="material-symbols-outlined">close</span></button>
+    </div>
+    <div class="modal__body">
+      <form id="form-edit-question" th:action="@{/admin/questions/update/0}" method="post">
+
+        <div class="form-group">
+          <label class="form-label">Question *</label>
+          <textarea class="form-textarea" name="questionText" id="edit-questionText"
+                    required placeholder="Saisissez votre question ici..."></textarea>
+        </div>
+
+        <div class="grid-2" style="gap:1rem">
+          <div class="form-group">
+            <label class="form-label">Catégorie *</label>
+            <select class="form-select" name="categoryId" id="edit-categoryId" required>
+              <option value="">Choisir une catégorie</option>
+              <option th:each="cat : ${categories}"
+                      th:value="${cat.id}"
+                      th:text="${cat.name}">Catégorie</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Difficulté *</label>
+            <select class="form-select" name="difficulty" id="edit-difficulty" required>
+              <option value="EASY"><span class="material-symbols-outlined">circle</span> Facile</option>
+              <option value="MEDIUM"><span class="material-symbols-outlined">circle</span> Moyen</option>
+              <option value="HARD"><span class="material-symbols-outlined">circle</span> Difficile</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:.75rem;justify-content:flex-end;margin-top:1.5rem">
+          <button type="button" class="btn btn--secondary" data-modal-close>Annuler</button>
+          <button type="submit" class="btn btn--primary">Enregistrer</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<script th:src="@{/js/admin.js}"></script>
+</body>
+</html>

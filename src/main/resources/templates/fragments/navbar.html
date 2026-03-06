@@ -1,0 +1,139 @@
+<!-- fragments/navbar.html : fragment Thymeleaf navbar (responsive) -->
+<div class="navbar-shell" xmlns:th="http://www.thymeleaf.org" th:fragment="navbar">
+  <nav class="navbar">
+    <div class="navbar__inner">
+
+      <!-- Brand -->
+      <a th:href="@{/}" class="navbar__brand">
+        <div class="navbar__brand-icon"><span class="material-symbols-outlined">psychology</span></div>
+        Quizzy
+      </a>
+
+      <!-- Navigation principale (desktop) -->
+      <nav class="navbar__nav">
+        <a th:href="@{/}" class="navbar__link"
+           th:classappend="${currentUri == '/'} ? 'active' : ''">
+          <span class="material-symbols-outlined">home</span> Accueil
+        </a>
+        <a th:href="@{/user/history}" class="navbar__link"
+           th:if="${sessionUsername != null}"
+           th:classappend="${currentUri != null and currentUri.startsWith('/user/history')} ? 'active' : ''">
+          <span class="material-symbols-outlined">description</span> Historique
+        </a>
+        <a th:href="@{/user/profile}" class="navbar__link"
+           th:if="${sessionUsername != null}"
+           th:classappend="${currentUri != null and currentUri.startsWith('/user/profile')} ? 'active' : ''">
+          <span class="material-symbols-outlined">person</span> Profil
+        </a>
+        <a th:href="@{/admin}" class="navbar__link"
+           th:if="${isAdmin}"
+           th:classappend="${currentUri != null and currentUri.startsWith('/admin')} ? 'active' : ''">
+          <span class="material-symbols-outlined">admin_panel_settings</span> Admin
+        </a>
+      </nav>
+
+      <!-- Actions -->
+      <div class="navbar__actions">
+        <div th:if="${sessionUsername != null}">
+          <a th:href="@{/user/profile}" class="navbar__user">
+            <div class="avatar-circle"
+                 th:text="${#strings.substring(sessionUsername, 0, 1)}">U</div>
+            <span th:text="${sessionUsername}">Utilisateur</span>
+          </a>
+        </div>
+        <!-- Déconnexion (desktop) -->
+        <a th:if="${sessionUsername != null}" th:href="@{/auth/logout}"
+           class="btn btn--ghost btn--sm navbar__logout" title="Déconnexion">
+          <span class="material-symbols-outlined">logout</span>
+        </a>
+
+        <!-- Burger (mobile) – placé à droite, à la place du bouton Déconnexion -->
+        <button type="button" class="navbar__burger" aria-label="Menu" data-nav-toggle>
+          <span class="material-symbols-outlined">menu</span>
+        </button>
+        <a th:if="${sessionUsername == null}" th:href="@{/auth/login}"
+           class="btn btn--primary btn--sm">
+          Se connecter
+        </a>
+      </div>
+
+    </div>
+  </nav>
+
+  <!-- Menu mobile (s'affiche quand .navbar a la classe navbar--open) -->
+  <div class="navbar__mobile-panel">
+    <div class="navbar__mobile-header" th:if="${sessionUsername != null}">
+      <div class="navbar__mobile-user">
+        <div class="avatar-circle" th:text="${#strings.substring(sessionUsername, 0, 1)}">U</div>
+        <div class="navbar__mobile-user-meta">
+          <div class="navbar__mobile-user-name" th:text="${sessionUsername}">Utilisateur</div>
+          <div class="navbar__mobile-user-role" th:text="${isAdmin} ? 'Administrateur' : 'Utilisateur'">Utilisateur</div>
+        </div>
+      </div>
+    </div>
+
+    <nav class="navbar__nav" aria-label="Menu mobile">
+      <a th:href="@{/}" class="navbar__link"
+         th:classappend="${currentUri == '/'} ? 'active' : ''">
+        <span class="material-symbols-outlined">home</span> Accueil
+      </a>
+      <a th:href="@{/user/history}" class="navbar__link"
+         th:if="${sessionUsername != null}"
+         th:classappend="${currentUri != null and currentUri.startsWith('/user/history')} ? 'active' : ''">
+        <span class="material-symbols-outlined">description</span> Historique
+      </a>
+      <a th:href="@{/user/profile}" class="navbar__link"
+         th:if="${sessionUsername != null}"
+         th:classappend="${currentUri != null and currentUri.startsWith('/user/profile')} ? 'active' : ''">
+        <span class="material-symbols-outlined">person</span> Profil
+      </a>
+      <a th:href="@{/admin}" class="navbar__link"
+         th:if="${isAdmin}"
+         th:classappend="${currentUri != null and currentUri.startsWith('/admin')} ? 'active' : ''">
+        <span class="material-symbols-outlined">admin_panel_settings</span> Admin
+      </a>
+
+      <!-- Déconnexion (mobile) -->
+      <a th:if="${sessionUsername != null}" th:href="@{/auth/logout}"
+         class="navbar__link navbar__link--danger" title="Déconnexion">
+        <span class="material-symbols-outlined">logout</span> Déconnexion
+      </a>
+    </nav>
+  </div>
+
+  <script>
+    (function(){
+      // Le fragment peut être inclus sur plusieurs pages; on attache proprement un listener par navbar.
+      const shell = document.currentScript && document.currentScript.closest('.navbar-shell');
+      if(!shell) return;
+      const navbar = shell.querySelector('.navbar');
+      const btn = shell.querySelector('[data-nav-toggle]');
+      if(!navbar || !btn) return;
+
+      // éviter double-binding si Thymeleaf réutilise le fragment
+      if(btn.dataset.bound === '1') return;
+      btn.dataset.bound = '1';
+
+      // Keep CSS var in sync with the real navbar height (important for fixed header offset)
+      const syncNavbarHeight = () => {
+        const h = navbar.getBoundingClientRect().height;
+        document.documentElement.style.setProperty('--navbar-h', `${Math.round(h)}px`);
+      };
+      syncNavbarHeight();
+      window.addEventListener('resize', syncNavbarHeight, { passive: true });
+
+      btn.addEventListener('click', function(){
+        navbar.classList.toggle('navbar--open');
+      });
+
+      // Optionnel: fermer le menu après clic sur un lien mobile
+      const mobilePanel = shell.querySelector('.navbar__mobile-panel');
+      if(mobilePanel){
+        mobilePanel.addEventListener('click', function(e){
+          const a = e.target.closest('a');
+          if(a) navbar.classList.remove('navbar--open');
+        });
+      }
+    })();
+  </script>
+</div>

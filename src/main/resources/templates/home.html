@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Accueil – Quizzy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/main.css}">
+  <link rel="stylesheet" th:href="@{/css/quiz.css}">
+</head>
+<body class="page-wrapper">
+
+<!-- Navbar -->
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+<main class="main-content">
+
+  <!-- Alerte accès refusé -->
+  <div th:if="${error == 'access_denied'}" class="alert alert--danger"
+       style="margin-bottom:1.5rem" data-auto-dismiss>
+    <span><span class="material-symbols-outlined">block</span></span> Accès réservé aux administrateurs.
+  </div>
+
+  <!-- Hero Banner -->
+  <div class="home-hero">
+    <div class="home-hero__text">
+      <div class="home-hero__eyebrow">Plateforme de quiz</div>
+      <h1 class="home-hero__title">
+<!--        <span th:if="${sessionUsername != null}">
+          Bonjour, <span th:text="${sessionUsername}">Joueur</span> 👋
+        </span>-->
+
+        <span th:if="${sessionUsername != null}">
+            Bonjour, <span th:text="${sessionUsername}">Joueur</span> 
+            <span class="material-symbols-outlined">person_raised_hand</span>
+        </span>
+        <span th:unless="${sessionUsername != null}">
+          Testez vos connaissances
+        </span>
+      </h1>
+      <p class="home-hero__subtitle">
+        Choisissez une catégorie ci-dessous et lancez-vous dans un quiz !
+        Des questions variées vous attendent à chaque session.
+      </p>
+    </div>
+    <div class="home-hero__emoji"><span class="material-symbols-outlined">psychology</span></div>
+  </div>
+
+  <!-- Section catégories -->
+  <div class="page-header">
+    <div class="page-header__text">
+      <h2 style="font-size:var(--text-2xl);font-weight:800;">Catégories disponibles</h2>
+      <p th:if="${totalElements != null}" style="color:var(--text-secondary);margin-top:.3rem">
+        <span th:text="${totalElements}">0</span> catégories disponibles
+      </p>
+    </div>
+  </div>
+
+  <!-- Erreur API -->
+  <div th:if="${apiError}" class="alert alert--warning" style="margin-bottom:1.5rem">
+    <span>⚠️</span> <span th:text="${apiError}"></span>
+  </div>
+
+  <!-- Grille de catégories -->
+  <div th:if="${categories != null and !categories.empty}" class="grid-auto">
+    <a th:each="category : ${categories}"
+       th:href="${sessionUsername != null} ? @{/quiz/play/{id}(id=${category.id})} : @{/auth/login}"
+       class="category-card"
+       th:title="${category.name}">
+
+      <div class="category-card__icon"><span class="material-symbols-outlined">menu_book</span></div>
+      <div class="category-card__name" th:text="${category.name}">Catégorie</div>
+      <div class="category-card__cta">
+        <span th:text="${sessionUsername != null} ? 'Jouer' : 'Se connecter'">Jouer</span>
+        <span class="arrow">→</span>
+      </div>
+    </a>
+  </div>
+
+  <!-- Etat vide -->
+  <div th:if="${categories == null or categories.empty}" class="empty-state">
+    <div class="empty-state__icon"><span class="material-symbols-outlined">mail</span></div>
+    <div class="empty-state__title">Aucune catégorie disponible</div>
+    <p>Aucune catégorie n'a encore été créée.</p>
+    <a th:if="${isAdmin}" th:href="@{/admin/categories}"
+       class="btn btn--primary" style="margin-top:1rem">
+      Créer une catégorie
+    </a>
+  </div>
+
+  <!-- Pagination -->
+  <div th:if="${totalPages != null and totalPages > 1}" class="pagination">
+    <a th:href="@{/(page=0)}"
+       class="pagination__btn"
+       th:classappend="${currentPage == 0} ? 'disabled' : ''">
+      «
+    </a>
+    <a th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+       th:href="@{/(page=${i})}"
+       class="pagination__btn"
+       th:classappend="${i == currentPage} ? 'active' : ''"
+       th:text="${i + 1}">1</a>
+    <a th:href="@{/(page=${totalPages - 1})}"
+       class="pagination__btn"
+       th:classappend="${currentPage == totalPages - 1} ? 'disabled' : ''">
+      »
+    </a>
+  </div>
+
+  <!-- Invite à se connecter -->
+  <div th:unless="${sessionUsername != null}"
+       class="card" style="text-align:center;padding:2.5rem;margin-top:2.5rem">
+    <div style="font-size:2.5rem;margin-bottom:1rem"><span class="material-symbols-outlined">lock_open</span></div>
+    <h3 style="font-size:var(--text-xl);font-weight:700;margin-bottom:.5rem">
+      Connectez-vous pour jouer
+    </h3>
+    <p style="color:var(--text-secondary);margin-bottom:1.5rem">
+      Créez un compte gratuit ou connectez-vous pour accéder aux quiz et suivre vos scores.
+    </p>
+    <div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap">
+      <a th:href="@{/auth/login}" class="btn btn--primary">Se connecter</a>
+      <a th:href="@{/auth/register}" class="btn btn--secondary">S'inscrire</a>
+    </div>
+  </div>
+
+</main>
+
+<!-- Footer -->
+<footer style="border-top:1px solid var(--border);padding:1.5rem;text-align:center;
+               font-size:var(--text-sm);color:var(--text-muted);background:#fff;margin-top:auto">
+  © 2026 Quizzy – Testez vos connaissances <span class="material-symbols-outlined">psychology</span>
+</footer>
+
+<script>
+  // Auto-dismiss alerts
+  document.querySelectorAll('.alert[data-auto-dismiss]').forEach(a => {
+    setTimeout(() => { a.style.opacity = '0'; a.style.transition = 'opacity .4s';
+      setTimeout(() => a.remove(), 400); }, 4000);
+  });
+</script>
+
+</body>
+</html>

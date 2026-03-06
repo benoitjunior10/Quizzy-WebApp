@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="${categoryName + ' – Quiz'}">Quiz</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/main.css}">
+  <link rel="stylesheet" th:href="@{/css/quiz.css}">
+</head>
+<body class="page-wrapper">
+
+<!-- Navbar -->
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+<!-- Header quiz sticky -->
+<div class="quiz-header">
+  <div class="quiz-header__info">
+    <a th:href="@{/}" class="btn btn--ghost btn--sm">← Retour</a>
+    <span class="quiz-header__category"><span class="material-symbols-outlined">menu_book</span> <span th:text="${categoryName}">Catégorie</span></span>
+  </div>
+  <div style="display:flex;align-items:center;gap:.75rem">
+    <span id="q-counter" class="quiz-counter"
+          th:text="'Question 1 / ' + ${totalQuestions}">Q 1/10</span>
+    <div id="quiz-timer" class="quiz-timer">⏱ 00:00</div>
+  </div>
+</div>
+
+<!-- Barre de progression -->
+<div class="quiz-progress">
+  <div id="progress-bar" class="quiz-progress__bar"
+       th:style="'width: ' + (1.0 / ${totalQuestions} * 100) + '%'"></div>
+</div>
+
+<!-- Formulaire caché pour soumission -->
+<form id="quiz-form" th:action="@{/quiz/submit}" method="post" style="display:none">
+  <input type="hidden" name="categoryId" th:value="${categoryId}">
+  <input type="hidden" id="hidden-duration" name="duration" value="0">
+</form>
+
+<!-- Contenu quiz -->
+<div class="quiz-container">
+
+  <!-- Slides de questions -->
+  <div th:each="question, iterStat : ${questions}"
+       class="question-slide"
+       th:classappend="${iterStat.first} ? ' active' : ''"
+       th:data-question-id="${question.id}">
+
+    <div class="question-card">
+      <div class="question-card__num"
+           th:text="'Question ' + ${iterStat.count} + ' / ' + ${questions.size()}">
+        Question 1 / 10
+      </div>
+      <div class="question-card__text" th:text="${question.questionText}">
+        La question s'affiche ici
+      </div>
+
+      <!-- Badge difficulté -->
+      <div style="margin-bottom:1.25rem">
+        <span class="badge"
+              th:classappend="${question.difficulty == 'EASY'} ? 'badge--easy' : (${question.difficulty == 'MEDIUM'} ? 'badge--medium' : 'badge--hard')"
+              th:text="${question.difficulty}">MEDIUM</span>
+      </div>
+
+      <!-- Options -->
+      <div class="options-grid">
+        <label th:each="option, optStat : ${question.options}"
+               class="option-label"
+               th:for="'opt-' + ${question.id} + '-' + ${option.id}">
+          <input class="option-input"
+                 type="radio"
+                 th:id="'opt-' + ${question.id} + '-' + ${option.id}"
+                 th:name="'q-' + ${question.id}"
+                 th:value="${option.id}"
+                 th:data-question-id="${question.id}">
+          <div class="option-letter"
+               th:text="${#strings.substring('ABCD', optStat.index, optStat.index + 1)}">A</div>
+          <span class="option-text" th:text="${option.optionText}">Réponse...</span>
+        </label>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Navigation -->
+  <div class="quiz-nav">
+    <button id="btn-prev" class="btn btn--secondary" disabled>← Précédent</button>
+
+    <div id="quiz-dots" class="quiz-nav__dots"></div>
+
+    <button id="btn-next" class="btn btn--primary">Suivant →</button>
+    <button id="btn-submit" class="btn btn--primary" style="display:none">
+      <span class="material-symbols-outlined">check_circle</span> Terminer le quiz
+    </button>
+  </div>
+
+</div>
+
+<style>
+  .question-slide { display: none; }
+  .question-slide.active { display: block; }
+</style>
+
+<script th:src="@{/js/quiz.js}"></script>
+</body>
+</html>

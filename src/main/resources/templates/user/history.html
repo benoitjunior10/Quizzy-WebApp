@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Historique – Quizzy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/main.css}">
+</head>
+<body class="page-wrapper">
+
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+<main class="main-content">
+
+  <div class="page-header">
+    <div class="page-header__text">
+      <h1><span class="material-symbols-outlined">description</span> Mon Historique</h1>
+      <p>Retrouvez toutes vos parties passées.</p>
+    </div>
+    <a th:href="@{/}" class="btn btn--primary">+ Nouveau quiz</a>
+  </div>
+
+  <!-- Stats résumé -->
+  <div th:if="${stats != null}" class="grid-4" style="margin-bottom:2rem">
+    <div class="stat-card">
+      <div class="stat-card__icon stat-card__icon--primary"><span class="material-symbols-outlined">sports_esports</span></div>
+      <div class="stat-card__info">
+        <div class="stat-card__value" th:text="${stats.totalAttempts}">0</div>
+        <div class="stat-card__label">Parties jouées</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card__icon stat-card__icon--success"><span class="material-symbols-outlined">trending_up</span></div>
+      <div class="stat-card__info">
+        <div class="stat-card__value"
+             th:text="${#numbers.formatDecimal(stats.averageScore, 1, 1) + '%'}">0%</div>
+        <div class="stat-card__label">Score moyen</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card__icon stat-card__icon--warning"><span class="material-symbols-outlined">emoji_events</span></div>
+      <div class="stat-card__info">
+        <div class="stat-card__value" th:text="${stats.bestScore + '%'}">0%</div>
+        <div class="stat-card__label">Meilleur score</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card__icon stat-card__icon--accent">⏱</div>
+      <div class="stat-card__info">
+        <div class="stat-card__value"
+             th:text="${#numbers.formatDecimal(stats.totalTimeSpent / 60.0, 1, 0) + ' min'}">0 min</div>
+        <div class="stat-card__label">Temps total</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tableau historique -->
+  <div class="card">
+    <div class="card__header">
+      <span class="card__title">Toutes mes parties</span>
+      <span class="badge badge--gray" th:text="${attempts != null ? attempts.size() : 0} + ' résultats'">0 résultats</span>
+    </div>
+
+    <!-- Desktop/tablette: tableau -->
+    <div th:if="${attempts != null and !attempts.empty}" class="table-wrapper desktop-only">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Catégorie</th>
+            <th>Score</th>
+            <th>Durée</th>
+            <th>Date</th>
+            <th>Performance</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="attempt, stat : ${attempts}">
+            <td style="color:var(--text-muted);font-weight:600" th:text="${stat.count}">1</td>
+            <td>
+              <div style="display:flex;align-items:center;gap:.5rem">
+                <span><span class="material-symbols-outlined">menu_book</span></span>
+                <strong th:text="${attempt.categoryName}">Catégorie</strong>
+              </div>
+            </td>
+            <td>
+              <span class="badge"
+                    th:classappend="${attempt.score >= 80} ? 'badge--success' : (${attempt.score >= 60} ? 'badge--primary' : (${attempt.score >= 40} ? 'badge--warning' : 'badge--danger'))"
+                    th:text="${attempt.score} + '%'">75%</span>
+            </td>
+            <td style="color:var(--text-secondary)"
+                th:text="${#numbers.formatDecimal(attempt.duration / 60.0, 1, 1) + ' min'}">2 min</td>
+            <td style="color:var(--text-secondary);font-size:var(--text-sm)"
+                th:text="${attempt.date != null} ? ${#temporals.format(attempt.date, 'dd/MM/yyyy HH:mm')} : '-'">
+              01/01/2025
+            </td>
+            <td>
+              <div style="display:flex;align-items:center;gap:.5rem">
+                <div style="flex:1;height:6px;background:var(--gray-100);border-radius:3px;overflow:hidden;min-width:80px">
+                  <div th:style="'width:' + ${attempt.score} + '%;height:100%;background:' +
+                       (${attempt.score >= 80} ? 'var(--success)' : (${attempt.score >= 60} ? 'var(--primary)' : (${attempt.score >= 40} ? 'var(--warning)' : 'var(--danger)'))) +
+                       ';border-radius:3px'"></div>
+                </div>
+                <!-- <span th:text="${attempt.score >= 80} ? '<span class="material-symbols-outlined">emoji_events</span>' : (${attempt.score >= 60} ? '⭐' : (${attempt.score >= 40} ? '<span class="material-symbols-outlined">thumb_up</span>' : '<span class="material-symbols-outlined">fitness_center</span>'))">⭐</span> -->
+
+                <span th:if="${attempt.score >= 80}" class="material-symbols-outlined">
+                    emoji_events
+                </span>
+
+                <span th:if="${attempt.score >= 60 and attempt.score < 80}" class="material-symbols-outlined">
+                    star
+                </span>
+
+                <span th:if="${attempt.score >= 40 and attempt.score < 60}" class="material-symbols-outlined">
+                    thumb_up
+                </span>
+
+                <span th:if="${attempt.score < 40}" class="material-symbols-outlined">
+                    fitness_center
+                </span>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Mobile: cartes lisibles -->
+    <div th:if="${attempts != null and !attempts.empty}" class="mobile-only" style="margin-top:1rem">
+      <div class="list-card" th:each="attempt, stat : ${attempts}" style="margin-bottom: .75rem">
+        <div class="list-card__row">
+          <span class="list-card__label">#</span>
+          <span class="list-card__value" th:text="${stat.count}">1</span>
+        </div>
+        <div class="list-card__row">
+          <span class="list-card__label">Catégorie</span>
+          <span class="list-card__value" th:text="${attempt.categoryName}">Catégorie</span>
+        </div>
+        <div class="list-card__row">
+          <span class="list-card__label">Score</span>
+          <span class="list-card__value" th:text="${attempt.score} + '%'"></span>
+        </div>
+        <div class="list-card__row">
+          <span class="list-card__label">Durée</span>
+          <span class="list-card__value" th:text="${#numbers.formatDecimal(attempt.duration / 60.0, 1, 1) + ' min'}">2 min</span>
+        </div>
+        <div class="list-card__row">
+          <span class="list-card__label">Date</span>
+          <span class="list-card__value"
+                th:text="${attempt.date != null} ? ${#temporals.format(attempt.date, 'dd/MM/yyyy HH:mm')} : '-'">01/01/2025</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Etat vide -->
+    <div th:if="${attempts == null or attempts.empty}" class="empty-state">
+      <div class="empty-state__icon"><span class="material-symbols-outlined">sports_esports</span></div>
+      <div class="empty-state__title">Aucune partie jouée</div>
+      <p>Lancez votre premier quiz pour voir votre historique ici.</p>
+      <a th:href="@{/}" class="btn btn--primary" style="margin-top:1rem">Jouer maintenant</a>
+    </div>
+  </div>
+
+</main>
+
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Connexion – Quizzy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/main.css}">
+  <link rel="stylesheet" th:href="@{/css/auth.css}">
+</head>
+<body>
+<div class="auth-page">
+
+  <!-- Panneau visuel gauche -->
+  <aside class="auth-visual">
+    <div class="auth-visual__content">
+      <div class="auth-visual__logo"><span class="material-symbols-outlined">psychology</span></div>
+      <h1 class="auth-visual__title">Quizzy</h1>
+      <p class="auth-visual__subtitle">
+        La plateforme de quiz interactive pour tester et booster tes connaissances.
+      </p>
+      <div class="auth-visual__features">
+        <div class="auth-visual__feature">
+          <span class="auth-visual__feature-dot"></span>
+          Des dizaines de catégories disponibles
+        </div>
+        <div class="auth-visual__feature">
+          <span class="auth-visual__feature-dot"></span>
+          Suivi de tes statistiques en temps réel
+        </div>
+        <div class="auth-visual__feature">
+          <span class="auth-visual__feature-dot"></span>
+          Historique complet de tes parties
+        </div>
+        <div class="auth-visual__feature">
+          <span class="auth-visual__feature-dot"></span>
+          Plusieurs niveaux de difficulté
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Formulaire -->
+  <main class="auth-form-panel">
+    <div class="auth-form-container">
+
+      <div class="auth-form-container__header">
+        <div class="auth-form-container__eyebrow">Bienvenue</div>
+        <h2 class="auth-form-container__title">Connectez-vous</h2>
+        <p class="auth-form-container__subtitle">Entrez vos identifiants pour accéder à votre compte.</p>
+      </div>
+
+      <!-- Alertes -->
+      <div th:if="${message}" class="alert alert--success" style="margin-bottom:1.25rem" data-auto-dismiss>
+        <span><span class="material-symbols-outlined">check_circle</span></span> <span th:text="${message}"></span>
+      </div>
+      <div th:if="${error}" class="alert alert--danger" style="margin-bottom:1.25rem">
+        <span>⚠️</span> <span th:text="${error}"></span>
+      </div>
+
+      <form th:action="@{/auth/login}" method="post" class="auth-form">
+        <input type="hidden" name="redirect" th:value="${redirect} ?: '/'">
+
+        <div class="form-group">
+          <label class="form-label" for="username">Identifiant</label>
+          <div class="auth-input-wrapper">
+            <span class="auth-input-icon"><span class="material-symbols-outlined">person</span></span>
+            <input class="form-input" type="text" id="username" name="username"
+                   placeholder="Votre pseudo" required autocomplete="username">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="password">Mot de passe</label>
+          <div class="auth-input-wrapper">
+            <span class="auth-input-icon"><span class="material-symbols-outlined">lock</span></span>
+            <input class="form-input" type="password" id="password" name="password"
+                   placeholder="••••••••" required autocomplete="current-password">
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn--primary auth-form__submit">
+          Se connecter →
+        </button>
+      </form>
+
+      <p class="auth-form__footer">
+        Pas encore de compte ? <a th:href="@{/auth/register}">S'inscrire gratuitement</a>
+      </p>
+    </div>
+  </main>
+
+</div>
+<script th:src="@{/js/admin.js}"></script>
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inscription – Quizzy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/main.css}">
+  <link rel="stylesheet" th:href="@{/css/auth.css}">
+</head>
+<body>
+<div class="auth-page">
+
+  <!-- Panneau visuel gauche -->
+  <aside class="auth-visual">
+    <div class="auth-visual__content">
+      <div class="auth-visual__logo"><span class="material-symbols-outlined">rocket_launch</span></div>
+      <h1 class="auth-visual__title">Rejoins Quizzy !</h1>
+      <p class="auth-visual__subtitle">
+        Crée ton compte gratuit et commence à tester tes connaissances dès maintenant.
+      </p>
+      <div class="auth-visual__features">
+        <div class="auth-visual__feature">
+          <span class="auth-visual__feature-dot"></span>
+          100% gratuit, sans publicité
+        </div>
+        <div class="auth-visual__feature">
+          <span class="auth-visual__feature-dot"></span>
+          Accès à toutes les catégories
+        </div>
+        <div class="auth-visual__feature">
+          <span class="auth-visual__feature-dot"></span>
+          Progression sauvegardée automatiquement
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Formulaire -->
+  <main class="auth-form-panel">
+    <div class="auth-form-container">
+
+      <div class="auth-form-container__header">
+        <div class="auth-form-container__eyebrow">Nouveau compte</div>
+        <h2 class="auth-form-container__title">Inscription</h2>
+        <p class="auth-form-container__subtitle">Remplissez le formulaire pour créer votre compte.</p>
+      </div>
+
+      <div th:if="${error}" class="alert alert--danger" style="margin-bottom:1.25rem">
+        <span>⚠️</span> <span th:text="${error}"></span>
+      </div>
+
+      <form th:action="@{/auth/register}" method="post" class="auth-form">
+
+        <div class="form-group">
+          <label class="form-label" for="username">Pseudo *</label>
+          <div class="auth-input-wrapper">
+            <span class="auth-input-icon"><span class="material-symbols-outlined">person</span></span>
+            <input class="form-input" type="text" id="username" name="username"
+                   placeholder="Votre pseudo unique" required autocomplete="username">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="email">Email *</label>
+          <div class="auth-input-wrapper">
+            <span class="auth-input-icon"><span class="material-symbols-outlined">email</span></span>
+            <input class="form-input" type="email" id="email" name="email"
+                   placeholder="votre@email.com" required autocomplete="email">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="password">Mot de passe *</label>
+          <div class="auth-input-wrapper">
+            <span class="auth-input-icon"><span class="material-symbols-outlined">lock</span></span>
+            <input class="form-input" type="password" id="password" name="password"
+                   placeholder="Minimum 8 caractères" required autocomplete="new-password"
+                   oninput="checkStrength(this.value)">
+          </div>
+          <div class="password-strength">
+            <div class="password-strength__bar" id="strength-bar"></div>
+          </div>
+          <span class="form-hint">8 car. min, une majuscule, un chiffre, un caractère spécial (@#$%...)</span>
+        </div>
+
+        <button type="submit" class="btn btn--primary auth-form__submit">
+          Créer mon compte →
+        </button>
+      </form>
+
+      <p class="auth-form__footer">
+        Déjà inscrit ? <a th:href="@{/auth/login}">Se connecter</a>
+      </p>
+    </div>
+  </main>
+
+</div>
+<script>
+function checkStrength(pwd) {
+  const bar = document.getElementById('strength-bar');
+  if (!bar) return;
+  bar.className = 'password-strength__bar';
+  if (pwd.length === 0) return;
+
+  let score = 0;
+  if (pwd.length >= 8) score++;
+  if (/[A-Z]/.test(pwd)) score++;
+  if (/[0-9]/.test(pwd)) score++;
+  if (/[@#$%^&+=!]/.test(pwd)) score++;
+
+  const levels = ['', 'weak', 'fair', 'good', 'strong'];
+  bar.classList.add(levels[score] || 'weak');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Utilisateurs – Admin Quizzy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/main.css}">
+  <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body class="page-wrapper page-wrapper--admin">
+
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+<div class="admin-layout">
+
+  <!-- Sidebar -->
+  <aside class="admin-sidebar">
+    <div class="admin-sidebar__header">
+      <div class="admin-sidebar__label">Administration</div>
+    </div>
+    <div class="admin-sidebar__section-title">Navigation</div>
+    <a th:href="@{/admin}" class="admin-nav-item">
+      <span class="admin-nav-item__icon"><span class="material-symbols-outlined">bar_chart</span></span> Dashboard
+    </a>
+    <a th:href="@{/admin/questions}" class="admin-nav-item">
+      <span class="admin-nav-item__icon"><span class="material-symbols-outlined">help</span></span> Questions
+    </a>
+    <a th:href="@{/admin/categories}" class="admin-nav-item">
+      <span class="admin-nav-item__icon"><span class="material-symbols-outlined">menu_book</span></span> Catégories
+    </a>
+    <a th:href="@{/admin/users}" class="admin-nav-item active">
+      <span class="admin-nav-item__icon"><span class="material-symbols-outlined">groups</span></span> Utilisateurs
+    </a>
+    <div class="admin-sidebar__section-title">Application</div>
+    <a th:href="@{/}" class="admin-nav-item">
+      <span class="admin-nav-item__icon"><span class="material-symbols-outlined">home</span></span> Site public
+    </a>
+    <a th:href="@{/auth/logout}" class="admin-nav-item">
+      <span class="admin-nav-item__icon"><span class="material-symbols-outlined">logout</span></span> Déconnexion
+    </a>
+  </aside>
+
+  <!-- Contenu -->
+  <div class="admin-content">
+
+    <!-- Alertes -->
+    <div th:if="${param.success}" class="alert alert--success" style="margin-bottom:1.5rem" data-auto-dismiss>
+      <span class="material-symbols-outlined">check_circle</span> <span th:text="${param.success[0]}">Succès</span>
+    </div>
+    <div th:if="${param.error}" class="alert alert--danger" style="margin-bottom:1.5rem" data-auto-dismiss>
+      ⚠️ Une erreur est survenue.
+    </div>
+
+    <div class="page-header">
+      <div class="page-header__text">
+        <h1>Gestion des Utilisateurs</h1>
+        <p th:if="${totalElements != null}">
+          <span th:text="${totalElements}">0</span> utilisateurs inscrits.
+        </p>
+      </div>
+    </div>
+
+    <!-- Barre de recherche -->
+    <div class="admin-action-bar">
+      <div class="admin-search">
+        <span class="admin-search__icon"><span class="material-symbols-outlined">search</span></span>
+        <input type="text" id="table-search" placeholder="Rechercher un utilisateur...">
+      </div>
+    </div>
+
+    <!-- Tableau -->
+    <div class="card">
+      <div th:if="${users != null and !users.empty}" class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Utilisateur</th>
+              <th>Rôle</th>
+              <th>Inscrit le</th>
+              <th>Dernière modif.</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:each="user : ${users}">
+              <td>
+                <div class="user-cell">
+                  <div class="user-avatar"
+                       th:text="${#strings.substring(user.username, 0, 1)}">U</div>
+                  <div>
+                    <div class="user-info__name" th:text="${user.username}">Username</div>
+                    <div class="user-info__email" th:text="${user.email}">email@ex.com</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span th:if="${user.role == 'ADMIN'}" class="role-admin">⚡ Admin</span>
+                <span th:unless="${user.role == 'ADMIN'}" class="role-user"><span class="material-symbols-outlined">person</span> User</span>
+              </td>
+              <td style="color:var(--text-secondary);font-size:var(--text-sm)"
+                  th:text="${user.createdAt != null} ? ${#temporals.format(user.createdAt, 'dd/MM/yyyy')} : '-'">
+                01/01/2025
+              </td>
+              <td style="color:var(--text-secondary);font-size:var(--text-sm)"
+                  th:text="${user.updatedAt != null} ? ${#temporals.format(user.updatedAt, 'dd/MM/yyyy')} : '-'">
+                01/01/2025
+              </td>
+              <!-- <td>
+                <form th:action="@{/admin/users/delete/{id}(id=${user.id})}" method="post"
+                      style="display:inline">
+                  <button type="submit" class="btn btn--danger btn--sm"
+                          th:data-confirm="'Supprimer l\'utilisateur ' + ${user.username} + ' ?'"
+                          th:disabled="${user.role == 'ADMIN'}">
+                    <span class="material-symbols-outlined">delete</span> Supprimer
+                  </button>
+                </form>
+              </td> -->
+
+              <td>
+                <button class="btn btn--secondary btn--sm"
+                        data-modal-open="modal-edit-user"
+                        th:data-id="${user.id}"
+                        th:data-username="${user.username}"
+                        th:data-email="${user.email}"
+                        th:data-role="${user.role}"
+                        th:disabled="${user.role == 'ROLE_ADMIN' or user.role == 'ADMIN'}"
+                        style="margin-right:.5rem">
+                  <span class="material-symbols-outlined">edit</span>️ Modifier
+                </button>
+                <form th:action="@{/admin/users/delete/{id}(id=${user.id})}" method="post"
+                      style="display:inline">
+                  <button type="submit" class="btn btn--danger btn--sm"
+                          th:data-confirm="'Supprimer l\'utilisateur ' + ${user.username} + ' ?'"
+                          th:disabled="${user.role == 'ROLE_ADMIN' or user.role == 'ADMIN'}">
+                    <span class="material-symbols-outlined">delete</span> Supprimer
+                  </button>
+                </form>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Etat vide -->
+      <div th:if="${users == null or users.empty}" class="empty-state">
+        <div class="empty-state__icon"><span class="material-symbols-outlined">groups</span></div>
+        <div class="empty-state__title">Aucun utilisateur trouvé</div>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div th:if="${totalPages != null and totalPages > 1}" class="pagination">
+      <a th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+         th:href="@{/admin/users(page=${i})}"
+         class="pagination__btn"
+         th:classappend="${i == currentPage} ? 'active' : ''"
+         th:text="${i + 1}">1</a>
+    </div>
+
+  </div>
+</div>
+
+    <!-- Modal : Modifier un utilisateur -->
+    <div id="modal-edit-user" class="modal-overlay">
+      <div class="modal">
+        <div class="modal__header">
+          <span class="modal__title"><span class="material-symbols-outlined">edit</span>️ Modifier l'utilisateur</span>
+          <button class="modal__close" data-modal-close><span class="material-symbols-outlined">close</span></button>
+        </div>
+        <div class="modal__body">
+          <form id="form-edit-user" th:action="@{/admin/users/update/0}" method="post">
+
+            <div class="form-group">
+              <label class="form-label">Nom d'utilisateur *</label>
+              <input type="text" class="form-input" name="username"
+                    id="edit-username" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Email *</label>
+              <input type="email" class="form-input" name="email"
+                    id="edit-email" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Rôle *</label>
+              <select class="form-select" name="role" id="edit-role">
+                <option value="ROLE_USER"><span class="material-symbols-outlined">person</span> Utilisateur</option>
+                <option value="ROLE_ADMIN">⚡ Administrateur</option>
+              </select>
+            </div>
+
+            <div style="display:flex;gap:.75rem;justify-content:flex-end;margin-top:1.5rem">
+              <button type="button" class="btn btn--secondary" data-modal-close>Annuler</button>
+              <button type="submit" class="btn btn--primary">Enregistrer</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+<script th:src="@{/js/admin.js}"></script>
+</body>
+</html>

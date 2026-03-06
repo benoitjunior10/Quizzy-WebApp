@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Admin – Quizzy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/main.css}">
+  <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body class="page-wrapper page-wrapper--admin">
+
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+<div class="admin-layout">
+
+  <!-- Sidebar -->
+  <aside class="admin-sidebar">
+    <div class="admin-sidebar__header">
+      <div class="admin-sidebar__label">Administration</div>
+    </div>
+
+    <div class="admin-sidebar__section-title">Navigation</div>
+    <a th:href="@{/admin}" class="admin-nav-item active">
+      <span class="admin-nav-item__icon"><span class="material-symbols-outlined">bar_chart</span></span> Dashboard
+    </a>
+    <a th:href="@{/admin/questions}" class="admin-nav-item">
+      <span class="admin-nav-item__icon"><span class="material-symbols-outlined">help</span></span> Questions
+    </a>
+    <a th:href="@{/admin/categories}" class="admin-nav-item">
+      <span class="admin-nav-item__icon"><span class="material-symbols-outlined">menu_book</span></span> Catégories
+    </a>
+    <a th:href="@{/admin/users}" class="admin-nav-item">
+      <span class="admin-nav-item__icon"><span class="material-symbols-outlined">groups</span></span> Utilisateurs
+    </a>
+
+    <div class="admin-sidebar__section-title">Application</div>
+    <a th:href="@{/}" class="admin-nav-item">
+      <span class="admin-nav-item__icon"><span class="material-symbols-outlined">home</span></span> Site public
+    </a>
+    <a th:href="@{/auth/logout}" class="admin-nav-item">
+      <span class="admin-nav-item__icon"><span class="material-symbols-outlined">logout</span></span> Déconnexion
+    </a>
+  </aside>
+
+  <!-- Contenu -->
+  <div class="admin-content">
+
+    <div class="page-header">
+      <div class="page-header__text">
+        <h1>Dashboard</h1>
+        <p>Vue d'ensemble de la plateforme Quizzy.</p>
+      </div>
+    </div>
+
+    <!-- Stats globales -->
+    <div th:if="${stats != null}" class="admin-stats-grid">
+      <div class="stat-card">
+        <div class="stat-card__icon stat-card__icon--primary"><span class="material-symbols-outlined">groups</span></div>
+        <div class="stat-card__info">
+          <div class="stat-card__value" th:text="${stats.totalUsers}">0</div>
+          <div class="stat-card__label">Utilisateurs</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card__icon stat-card__icon--accent"><span class="material-symbols-outlined">menu_book</span></div>
+        <div class="stat-card__info">
+          <div class="stat-card__value" th:text="${stats.totalCategories}">0</div>
+          <div class="stat-card__label">Catégories</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card__icon stat-card__icon--warning"><span class="material-symbols-outlined">help</span></div>
+        <div class="stat-card__info">
+          <div class="stat-card__value" th:text="${stats.totalQuestions}">0</div>
+          <div class="stat-card__label">Questions</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card__icon stat-card__icon--success"><span class="material-symbols-outlined">sports_esports</span></div>
+        <div class="stat-card__info">
+          <div class="stat-card__value" th:text="${stats.totalQuizAttempts}">0</div>
+          <div class="stat-card__label">Parties jouées</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card__icon stat-card__icon--danger"><span class="material-symbols-outlined">trending_up</span></div>
+        <div class="stat-card__info">
+          <div class="stat-card__value"
+               th:text="${#numbers.formatDecimal(stats.globalAverageScore, 1, 1) + '%'}">0%</div>
+          <div class="stat-card__label">Score moyen global</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions rapides -->
+    <div class="grid-3" style="margin-top:2rem">
+      <a th:href="@{/admin/questions}" class="card card--hover" style="text-decoration:none;padding:1.75rem">
+        <div style="font-size:2rem;margin-bottom:1rem"><span class="material-symbols-outlined">help</span></div>
+        <div style="font-weight:700;font-size:var(--text-lg);margin-bottom:.4rem">Gérer les questions</div>
+        <div style="color:var(--text-secondary);font-size:var(--text-sm)">Créer, modifier et supprimer les questions de quiz.</div>
+        <div style="color:var(--primary);font-weight:600;font-size:var(--text-sm);margin-top:1rem">Accéder →</div>
+      </a>
+      <a th:href="@{/admin/categories}" class="card card--hover" style="text-decoration:none;padding:1.75rem">
+        <div style="font-size:2rem;margin-bottom:1rem"><span class="material-symbols-outlined">menu_book</span></div>
+        <div style="font-weight:700;font-size:var(--text-lg);margin-bottom:.4rem">Gérer les catégories</div>
+        <div style="color:var(--text-secondary);font-size:var(--text-sm)">Organiser les catégories de questions.</div>
+        <div style="color:var(--primary);font-weight:600;font-size:var(--text-sm);margin-top:1rem">Accéder →</div>
+      </a>
+      <a th:href="@{/admin/users}" class="card card--hover" style="text-decoration:none;padding:1.75rem">
+        <div style="font-size:2rem;margin-bottom:1rem"><span class="material-symbols-outlined">groups</span></div>
+        <div style="font-weight:700;font-size:var(--text-lg);margin-bottom:.4rem">Gérer les utilisateurs</div>
+        <div style="color:var(--text-secondary);font-size:var(--text-sm)">Consulter et modérer les comptes utilisateurs.</div>
+        <div style="color:var(--primary);font-weight:600;font-size:var(--text-sm);margin-top:1rem">Accéder →</div>
+      </a>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

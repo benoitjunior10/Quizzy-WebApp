@@ -1,0 +1,275 @@
+/* ============================================================
+   QUIZZY – Admin panel styles
+   ============================================================ */
+
+/* ── Layout admin (sidebar + content) ──────────────────────── */
+.admin-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  min-height: calc(100vh - var(--navbar-h));
+}
+
+/* ── Sidebar ────────────────────────────────────────────────── */
+.admin-sidebar {
+  background: var(--gray-900);
+  padding: 1.5rem 0;
+  position: sticky;
+  top: var(--navbar-h);
+  height: calc(100vh - var(--navbar-h));
+  overflow-y: auto;
+  border-right: 1px solid rgba(255,255,255,.06);
+}
+
+.admin-sidebar__header {
+  padding: .5rem 1.25rem 1.25rem;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+  margin-bottom: .75rem;
+}
+
+.admin-sidebar__label {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--gray-500);
+}
+
+.admin-nav-item {
+  display: flex;
+  align-items: center;
+  gap: .7rem;
+  padding: .6rem 1.25rem;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--gray-400);
+  transition: all var(--transition);
+  border-left: 3px solid transparent;
+  text-decoration: none;
+}
+
+.admin-nav-item:hover {
+  background: rgba(255,255,255,.05);
+  color: var(--gray-100);
+}
+
+.admin-nav-item.active {
+  color: #fff;
+  background: rgba(91,91,214,.2);
+  border-left-color: var(--primary);
+}
+
+.admin-nav-item__icon {
+  width: 20px;
+  text-align: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.admin-sidebar__section-title {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--gray-600);
+  padding: 1rem 1.25rem .4rem;
+}
+
+/* ── Content area ───────────────────────────────────────────── */
+.admin-content {
+  padding: 2rem 2.5rem;
+  background: var(--bg-page);
+  overflow-x: hidden;
+}
+
+/* ── Stats row ──────────────────────────────────────────────── */
+.admin-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+@media (max-width: 1200px) {
+  .admin-stats-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 900px) {
+  .admin-stats-grid { grid-template-columns: repeat(2, 1fr); }
+  /* Sur mobile, on garde l'accès aux fonctionnalités via une barre horizontale */
+  .admin-layout {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - var(--navbar-h));
+  }
+
+  .admin-sidebar {
+    display: block;
+    position: sticky;
+    top: var(--navbar-h);
+    height: auto;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: .75rem .75rem;
+    white-space: nowrap;
+    border-right: none;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+  }
+
+  .admin-sidebar__header,
+  .admin-sidebar__section-title { display: none; }
+
+  .admin-nav-item {
+    display: inline-flex;
+    border-left: none;
+    border-bottom: 3px solid transparent;
+    padding: .55rem .75rem;
+    margin-right: .25rem;
+  }
+
+  .admin-nav-item.active {
+    border-bottom-color: var(--primary);
+    background: rgba(91,91,214,.2);
+  }
+
+  .admin-content { padding: 1.25rem 1rem; }
+}
+
+/* ── Action bar (search + buttons) ─────────────────────────── */
+.admin-action-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.admin-search {
+  position: relative;
+  flex: 1;
+  max-width: 360px;
+}
+
+.admin-search__icon {
+  position: absolute;
+  left: .85rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  font-size: .9rem;
+}
+
+.admin-search input {
+  width: 100%;
+  padding: .6rem .9rem .6rem 2.5rem;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  background: #fff;
+  outline: none;
+  transition: border-color var(--transition);
+}
+
+.admin-search input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-10);
+}
+
+/* ── User table specifics ───────────────────────────────────── */
+.user-cell {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+}
+
+.user-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--text-xs);
+  font-weight: 800;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.user-info__name {
+  font-weight: 600;
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+}
+
+.user-info__email {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+/* ── Role badge ─────────────────────────────────────────────── */
+.role-admin {
+  background: #EEF2FF;
+  color: #3730A3;
+  font-weight: 700;
+  padding: .25rem .65rem;
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+}
+
+.role-user {
+  background: var(--gray-100);
+  color: var(--gray-600);
+  font-weight: 600;
+  padding: .25rem .65rem;
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+}
+
+/* ── Delete confirm overlay ─────────────────────────────────── */
+.confirm-modal .modal {
+  max-width: 420px;
+  text-align: center;
+}
+
+.confirm-modal__icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--danger-light);
+  color: var(--danger);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+  margin: 0 auto 1.25rem;
+}
+
+/* ── Question form ──────────────────────────────────────────── */
+.option-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: .75rem;
+  align-items: center;
+  margin-bottom: .75rem;
+}
+
+.option-row__correct {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--success);
+  white-space: nowrap;
+}
+
+/* ── Dashboard chart placeholder ───────────────────────────── */
+.chart-placeholder {
+  background: var(--gray-50);
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-lg);
+  padding: 3rem;
+  text-align: center;
+  color: var(--text-muted);
+}

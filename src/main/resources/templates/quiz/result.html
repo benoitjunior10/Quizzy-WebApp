@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Résultat – Quizzy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/main.css}">
+  <link rel="stylesheet" th:href="@{/css/quiz.css}">
+</head>
+<body class="page-wrapper">
+
+<!-- Navbar -->
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+<div class="result-page">
+
+  <!-- Hero score -->
+  <!-- <div class="result-hero">
+    <span class="result-hero__emoji"
+          th:text="${result.score >= 80} ? '<span class="material-symbols-outlined">emoji_events</span>' : (${result.score >= 60} ? '<span class="material-symbols-outlined">celebration</span>' : (${result.score >= 40} ? '<span class="material-symbols-outlined">thumb_up</span>' : '<span class="material-symbols-outlined">fitness_center</span>'))">
+      <span class="material-symbols-outlined">celebration</span>
+    </span>
+    <div class="result-hero__score">
+      <span th:text="${result.score}">75</span><span style="font-size:2rem">%</span>
+    </div>
+    <div class="result-hero__label">Score obtenu</div>
+    <div class="result-hero__title"
+         th:text="${result.score >= 80} ? 'Excellent !' : (${result.score >= 60} ? 'Bien joué !' : (${result.score >= 40} ? 'Pas mal !' : 'Continuez les efforts !'))">
+      Bien joué !
+    </div>
+    <div class="result-hero__subtitle">
+      Quiz « <span th:text="${result.categoryName}">Catégorie</span> »
+    </div>
+  </div> -->
+
+  <div class="result-hero">
+
+    <span class="result-hero__emoji">
+        <span th:if="${result.score >= 80}" class="material-symbols-outlined">
+            emoji_events
+        </span>
+
+        <span th:if="${result.score >= 60 and result.score < 80}" class="material-symbols-outlined">
+            celebration
+        </span>
+
+        <span th:if="${result.score >= 40 and result.score < 60}" class="material-symbols-outlined">
+            thumb_up
+        </span>
+
+        <span th:if="${result.score < 40}" class="material-symbols-outlined">
+            fitness_center
+        </span>
+    </span>
+
+    <div class="result-hero__score">
+        <span th:text="${result.score}">75</span><span style="font-size:2rem">%</span>
+    </div>
+
+    <div class="result-hero__label">Score obtenu</div>
+
+    <div class="result-hero__title"
+         th:text="${result.score >= 80} ? 'Excellent !' :
+                  (${result.score >= 60} ? 'Bien joué !' :
+                  (${result.score >= 40} ? 'Pas mal !' : 'Continuez les efforts !'))">
+        Bien joué !
+    </div>
+
+    <div class="result-hero__subtitle">
+        Quiz « <span th:text="${result.categoryName}">Catégorie</span> »
+    </div>
+
+  </div>
+
+  <!-- Statistiques -->
+  <div class="result-stats">
+    <div class="result-stat">
+      <div class="result-stat__val" th:text="${result.score} + '%'">75%</div>
+      <div class="result-stat__lbl">Score</div>
+    </div>
+    <div class="result-stat">
+      <div class="result-stat__val" th:text="${#numbers.formatDecimal(result.duration / 60.0, 1, 1)} + ' min'">2.3 min</div>
+      <div class="result-stat__lbl">Durée</div>
+    </div>
+    <div class="result-stat">
+      <div class="result-stat__val" th:text="${result.categoryName}">Science</div>
+      <div class="result-stat__lbl">Catégorie</div>
+    </div>
+  </div>
+
+  <!-- Message d'encouragement -->
+  <div class="card" style="padding:1.5rem;margin-bottom:2rem;text-align:left">
+    <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem">
+      <span style="font-size:1.4rem"><span class="material-symbols-outlined">lightbulb</span></span>
+      <strong>Analyse de votre performance</strong>
+    </div>
+    <p style="color:var(--text-secondary);line-height:1.7" th:switch="${true}">
+      <span th:case="${result.score >= 80}">
+        Bravo ! Votre maîtrise du sujet est impressionnante. Continuez comme ça !
+      </span>
+      <span th:case="${result.score >= 60}">
+        Bon résultat ! Vous avez une bonne maîtrise du sujet. Quelques révisions suffisent pour atteindre l'excellence.
+      </span>
+      <span th:case="${result.score >= 40}">
+        Résultat correct mais perfectible. Relisez les notions clés et retentez votre chance !
+      </span>
+      <span th:case="${true}">
+        Pas de découragement ! Chaque tentative vous rapproche de la réussite. Continuez à pratiquer !
+      </span>
+    </p>
+  </div>
+
+  <!-- Boutons d'action -->
+  <div class="result-actions">
+    <a th:href="@{/}" class="btn btn--secondary btn--lg">
+      <span class="material-symbols-outlined">home</span> Retour à l'accueil
+    </a>
+    <a th:href="@{/user/history}" class="btn btn--ghost btn--lg">
+      <span class="material-symbols-outlined">description</span> Mon historique
+    </a>
+  </div>
+
+</div>
+
+</body>
+</html>
